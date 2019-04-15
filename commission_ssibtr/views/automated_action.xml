@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="0">
+
+    <record id="commission_automated_action" model="base.automation">
+      <field name="name">Make Commission on Order Confirmation</field>
+      <field name="model_id" ref="sale.model_sale_order"/>
+      <field name="active">1</field>
+      <field name="trigger">on_create_or_write</field>
+      <field name="state">code</field>
+      <field name="code">
+
+
+if record.state not in ['draft','sent'] and record.user_id.is_commissionable == True:
+  
+  commission_model = env['sale.commission']
+  if not commission_model.search([('sale_order.id', '=', record.id)]):
+    
+    vals = {
+      'name': record.name + '-' + record.user_id.name,
+      'sale_order': record.id,
+      'sales_person': record.user_id.id,
+      'close_month': record.date_order,
+      'partner_id': record.user_id.id,
+      'hardware_factor': 1,
+      'software_factor': 10.8,
+      'labor_factor': 1,
+      'hardware_percent': 50,
+      'software_percent': 100,
+      'labor_percent':50,
+      'partner_id': record.partner_id.id,
+      'hardware_total': 0,
+      'software_total': 0,
+      'labor_total': 0
+      
+    }
+    
+    for order_line in record.order_line:
+      if order_line.price_subtotal > 0:
+        if order_line.product_id.type == 'product':
+          vals['hardware_total'] += order_line.price_subtotal
+        if order_line.product_id.type == 'service':
+          try:
+            sub = env['sale.subscription']
+            if order_line.product_id.product_tmpl_id.recurring_invoice:
+              vals['software_total'] += order_line.price_subtotal
+            else:
+              vals['labor_total'] += order_line.price_subtotal
+          except:
+            vals['labor_total'] += order_line.price_subtotal
+                      
+    commission_model.create(vals)
+
+    
+    
+    
+    </field>
+    </record>
+
+  </data>
+</odoo>
