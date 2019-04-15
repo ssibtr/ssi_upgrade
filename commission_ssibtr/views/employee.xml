@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <odoo>
+
+        <!-- Add commissionable field to existing view whoop whoop -->
+        <record model="ir.ui.view" id="employee_commission_form_view">
+            <field name="name">employee.is_commissionable</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='resource_calendar_id']" position="after">
+                    <field name="is_commissionable" attrs="{'invisible':(['user_id','=',False])}"/>
+                 </xpath>
+            </field>
+        </record>
+
+</odoo>

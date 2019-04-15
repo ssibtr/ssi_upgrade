@@ -1,0 +1,149 @@
+<odoo>
+
+        <record model="ir.ui.view" id="commission_form_view">
+            <field name="name">commmission.form</field>
+            <field name="model">sale.commission</field>
+            <field name="arch" type="xml">
+                <form string="Commission Form">
+                    <header>
+                        <button string="Not Commissionable" type="object" name="action_ncommissionable"
+                                status="ncommissionable" class="oe_highlight" attrs="{'invisible':[('status', '==', 'paid')]}"/>
+                        <button string="Cancel" type="object" name="action_pending"
+                                status="pending" class="oe_highlight" attrs="{'invisible':[('status', '!=', 'paid')]}"/>
+
+                        <button string="Pending" type="object" name="action_pending"
+                                status="pending" attrs="{'invisible':[('status', '!=', 'ncommissionable')]}"/>
+                        <button string="Eligible for Payment" type="object" name="action_eligible"
+                                status="eligible" attrs="{'invisible':[('status', '!=', 'pending')]}"/>
+                        <button string="Approved" type="object" name="action_approved"
+                                status="approved" attrs="{'invisible':[('status', '!=', 'eligible')]}"/>
+                        <button string="Paid" type="object" name="action_paid"
+                                status="paid" attrs="{'invisible':[('status', '!=', 'approved')]}"/>
+                        <field name="status" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="sale_order"/>
+                                <field name="sales_person"/>
+                            </group>
+                            <group>
+                                <field name="close_month"/>
+                                <field name="approval_date"/>
+                                <field name="pay_date" attrs="{'required':[('status','=','approved')]}"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Calculator">
+                              <group>
+                                <table class="o_list_view table table-condensed table-striped o_list_view_ungrouped">
+                                    <thead>
+                                        <tr>
+                                            <th>Type</th>
+                                            <th>Amount</th>
+                                            <th>Factor</th>
+                                            <th>Percent</th>
+                                            <th>Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Hardware</td>
+                                            <td><field name="hardware_total"  attrs="{'readonly':['|',('status', '==', 'approved'), ('status', '==', 'paid')]}"/></td>
+                                            <td><field name="hardware_factor"  attrs="{'readonly':['|',('status', '==', 'approved'), ('status', '==', 'paid')]}"/></td>
+                                            <td><field name="hardware_percent" attrs="{'readonly':['|',('status', '==', 'approved'), ('status', '==', 'paid')]}"/></td>
+                                            <td>$<field name="hardware_commission" attrs="{'readonly':['|',('status', '==', 'approved'), ('status', '==', 'paid')]}"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Software</td>
+                                            <td><field name="software_total" attrs="{'readonly':['|',('status', '==', 'approved'), ('status', '==', 'paid')]}"/></td>
+                                            <td><field name="software_factor" attrs="{'readonly':['|',('status', '==', 'approved'), ('status', '==', 'paid')]}"/></td>
+                                            <td><field name="software_percent" attrs="{'readonly':['|',('status', '==', 'approved'), ('status', '==', 'paid')]}"/></td>
+                                            <td>$<field name="software_commission" attrs="{'readonly':['|',('status', '==', 'approved'), ('status', '==', 'paid')]}"/></td>
+                                        </tr>
+                                         <tr>
+                                            <td>Labor</td>
+                                            <td><field name="labor_total" attrs="{'readonly':['|',('status', '==', 'approved'), ('status', '==', 'paid')]}"/></td>
+                                            <td><field name="labor_factor" attrs="{'readonly':['|',('status', '==', 'approved'), ('status', '==', 'paid')]}"/></td>
+                                            <td><field name="labor_percent" attrs="{'readonly':['|',('status', '==', 'approved'), ('status', '==', 'paid')]}"/></td>
+                                            <td>$<field name="labor_commission" attrs="{'readonly':['|',('status', '==', 'approved'), ('status', '==', 'paid')]}"/></td>
+                                        </tr>
+                                        
+                                  
+                                        <tr style="background-color: white;">
+                                            <td/>
+                                            <td/>
+                                            <td/>
+                                            <td style="text-align: right;"><b>ACV</b></td>
+                                            <td>$<field name="commission_subtotal_total" attrs="{'readonly':['|',('status', '==', 'approved'), ('status', '==', 'paid')]}"/></td>
+                                        </tr>
+                                         <tr class="table-borderless" style="background-color: white;">
+                                            <td/>
+                                            <td/>
+                                            <td/>
+                                            <td style="text-align: right;"><b>Payment Percentage</b></td>
+                                            <td><field name="commission_percent" attrs="{'readonly':['|',('status', '==', 'approved'), ('status', '==', 'paid')]}"/></td>
+                                        </tr>
+                                         <tr class="table-borderless" style="background-color: white;">
+                                            <td/>
+                                            <td/>
+                                            <td/>
+                                            <td style="text-align: right;"><b>Commission</b></td>
+                                            <td>$<field name="final_commission" attrs="{'readonly':['|',('status', '==', 'approved'), ('status', '==', 'paid')]}"/></td>
+                                        </tr>
+                                        
+                                    </tbody>
+                                    
+                                </table>
+
+                            </group>
+
+                            </page>
+                            <page string="Sales Order Lines">
+                                <group>
+                                    <field name="order_lines"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+
+        <record model="ir.ui.view" id="commission_tree_view">
+            <field name="name">commmission.tree</field>
+            <field name="model">sale.commission</field>
+            <field name="arch" type="xml">
+                <tree string="Commission Tree">
+                    <field name="name"/>
+                    <field name="sale_order"/>
+                    <field name="sales_person"/>
+                    <field name="status"/>
+                    <field name="final_commission"/>
+                </tree>
+            </field>
+        </record>
+
+
+        <record model="ir.actions.act_window" id="commission_list_action">
+            <field name="name">Commission</field>
+            <field name="res_model">sale.commission</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">Create the first course
+                </p>
+            </field>
+        </record>
+
+        <menuitem id="commission_menu" name="Commissions" parent="sale.menu_sale_report"
+                  action="commission_list_action"/>
+</odoo>
+
+
