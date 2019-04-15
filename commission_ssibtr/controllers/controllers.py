@@ -12,7 +12,7 @@ class WebsiteSale(WebsiteSale):
     def ssibtr_test_api(self,  **args):
         # input_data = request.httprequest.data
         # ref = json.loads(input_data.decode("utf-8"))['ref']
-        data = {'message': 'Successs'}
+        data = {'message': 'Success'}
         # try:
         #     product = request.env['product.product'].sudo().search([('default_code', '=', ref.upper())], limit=1)
         #     if product:
