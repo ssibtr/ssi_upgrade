@@ -7,9 +7,9 @@ from datetime import datetime
 class Commission(models.Model):
     _name = 'sale.commission'
 
-    _inherit = [
-        'mail.thread',
-    ]
+    # _inherit = [
+        # 'mail.thread',
+    # ]
 
     #Main
     name = fields.Char(string="Title")
